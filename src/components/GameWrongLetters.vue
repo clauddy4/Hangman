@@ -2,17 +2,21 @@
   <div class="wrong-letters-container">
     <div class="wrong-letters">
       <p>Ошибки</p>
-      <span>п , </span>
-      <span>м , </span>
-      <span>с </span>
+      <span v-for="(letter, index) in wrongLetters" :key="letter">
+        {{ index === wrongLetters.length - 1 ? letter : `${letter}, ` }}
+      </span>
     </div>
   </div>
 </template>
 
-<script>
-export default {
-  name: 'GameWrongLetters'
+<script setup lang="ts">
+import { defineProps } from 'vue'
+
+interface Props {
+  wrongLetters: string[]
 }
+
+defineProps<Props>()
 </script>
 
 <style scoped></style>

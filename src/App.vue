@@ -20,19 +20,23 @@ import GameNotification from './components/GameNotification.vue'
 import { ref, watch } from 'vue'
 import { useRandomWord } from '@/composables/useRandomWord'
 import { useLetters } from '@/composables/useLetters'
+import { useNotifications } from '@/composables/useNotifications'
 
 const { word, getRandomWord } = useRandomWord()
-const { letters, correctLetters, wrongLetters, isLose, isWin, addLetter } = useLetters(word)
-const notification = ref<InstanceType<typeof GameNotification> | null>(null)
+const { letters, correctLetters, wrongLetters, isLose, isWin, addLetter, resetLetters } =
+  useLetters(word)
+const { notification, showNotification } = useNotifications()
 const popup = ref<InstanceType<typeof GamePopup> | null>(null)
-
+const restart = async () => {
+  await getRandomWord()
+  resetLetters()
+  popup.value?.close()
+}
 window.addEventListener('keydown', ({ key }) => {
   if (isWin.value || isLose.value) return
 
   if (letters.value.includes(key)) {
-    notification.value?.open()
-    setTimeout(() => notification.value?.close(), 1500)
-    return
+    showNotification()
   }
 
   addLetter(key)
@@ -45,10 +49,4 @@ watch(wrongLetters, () => {
 watch(correctLetters, () => {
   if (isWin.value) popup.value?.open('win')
 })
-
-const restart = async () => {
-  await getRandomWord()
-  letters.value = []
-  popup.value?.close()
-}
 </script>
